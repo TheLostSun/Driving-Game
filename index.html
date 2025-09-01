@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | AtherProject</title>
+    <title>Unity Web Player | DrivingGame</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
@@ -86,7 +86,7 @@
 
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <canvas id="unity-canvas" width="100%" height="100%" tabindex="-1"></canvas>
 
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
@@ -95,13 +95,13 @@
         </div>
       </div>
 
-      <div id="unity-warning"></div>
+      <!-- <div id="unity-warning"></div>
 
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button">Fullscreen</div>
         <div id="unity-build-title">AtherProject</div>
-      </div>
+      </div> -->
     </div>
 
     <script>
@@ -161,7 +161,7 @@
         codeUrl: buildUrl + "/main.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "TheLostSun",
-        productName: "AtherProject",
+        productName: "DrivingGame",
         productVersion: "1.0",
         showBanner: unityShowBanner,
       };
@@ -189,9 +189,9 @@
             document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
           }).then((unityInstance) => {
             document.querySelector("#unity-loading-bar").style.display = "none";
-            document.querySelector("#unity-fullscreen-button").onclick = () => {
-              unityInstance.SetFullscreen(1);
-            };
+            // document.querySelector("#unity-fullscreen-button").onclick = () => {
+            //   unityInstance.SetFullscreen(1);
+            // };
             unityInstance.SetFullscreen(1); // Force fullscreen on start
           }).catch((message) => {
             alert(message);
