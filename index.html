@@ -16,30 +16,42 @@
       }
 
       #unity-container {
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        overflow: hidden;
+        position: relative;
       }
 
-      canvas {
+      #unity-canvas {
+        aspect-ratio: 16 / 9;
         width: 100%;
-        height: 100%;
-        display: block;
+        max-width: 100vw;
+        max-height: 100vh;
+        height: auto;
         background: #000;
+        display: block;
       }
 
       #unity-warning {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         z-index: 9999;
-        font-size: 18px;
+        font-size: clamp(1rem, 2.5vw, 1.5rem);
         font-family: sans-serif;
-        color: #000;
+        color: #fff;
+        background: red;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        max-width: 90%;
+        text-align: center;
+        display: none;
       }
 
       #unity-loading-bar {
@@ -95,13 +107,7 @@
         </div>
       </div>
 
-      <!-- <div id="unity-warning"></div>
-
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button">Fullscreen</div>
-        <div id="unity-build-title">AtherProject</div>
-      </div> -->
+      <div id="unity-warning"></div>
     </div>
 
     <script>
@@ -109,21 +115,21 @@
 
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function () {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
+        if (!warningBanner) return;
+
+        warningBanner.innerHTML = msg;
+        warningBanner.style.display = 'block';
+
+        if (type === 'warning') {
+          warningBanner.style.background = 'yellow';
+          warningBanner.style.color = 'black';
+          setTimeout(() => {
+            warningBanner.style.display = 'none';
           }, 5000);
+        } else if (type === 'error') {
+          warningBanner.style.background = 'red';
+          warningBanner.style.color = 'white';
         }
-        updateBannerVisibility();
       }
 
       function isPortrait() {
@@ -133,21 +139,15 @@
       function handleOrientation() {
         if (isPortrait()) {
           canvas.style.display = "none";
-          document.querySelector("#unity-footer").style.display = "none";
-          document.querySelector("#unity-loading-bar").style.display = "none";
           unityShowBanner("Please rotate your device to landscape mode to play the game.", "error");
         } else {
-          // If landscape and page was loaded in portrait, reload
-          if (performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
-            location.reload();
-          }
+          canvas.style.display = "block";
+          document.querySelector("#unity-warning").style.display = "none";
         }
       }
 
       window.addEventListener("orientationchange", () => {
-        setTimeout(() => {
-          handleOrientation();
-        }, 500);
+        setTimeout(handleOrientation, 500);
       });
 
       handleOrientation(); // Initial check
@@ -174,9 +174,6 @@
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
         // config.devicePixelRatio = 1; // Optional: lower resolution
-      } else {
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
       }
 
       document.querySelector("#unity-loading-bar").style.display = "block";
@@ -189,10 +186,7 @@
             document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
           }).then((unityInstance) => {
             document.querySelector("#unity-loading-bar").style.display = "none";
-            // document.querySelector("#unity-fullscreen-button").onclick = () => {
-            //   unityInstance.SetFullscreen(1);
-            // };
-            unityInstance.SetFullscreen(1); // Force fullscreen on start
+            // Fullscreen has been removed
           }).catch((message) => {
             alert(message);
           });
