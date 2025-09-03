@@ -110,46 +110,59 @@
       <div id="unity-warning"></div>
     </div>
 
-    <script>
-      var canvas = document.querySelector("#unity-canvas");
+   <script>
+  var canvas = document.querySelector("#unity-canvas");
 
-      function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        if (!warningBanner) return;
+  function unityShowBanner(msg, type) {
+    var warningBanner = document.querySelector("#unity-warning");
+    if (!warningBanner) return;
 
-        warningBanner.innerHTML = msg;
-        warningBanner.style.display = 'block';
+    warningBanner.innerHTML = msg;
+    warningBanner.style.display = 'block';
 
-        if (type === 'warning') {
-          warningBanner.style.background = 'yellow';
-          warningBanner.style.color = 'black';
-          setTimeout(() => {
-            warningBanner.style.display = 'none';
-          }, 5000);
-        } else if (type === 'error') {
-          warningBanner.style.background = 'red';
-          warningBanner.style.color = 'white';
-        }
+    if (type === 'warning') {
+      warningBanner.style.background = 'yellow';
+      warningBanner.style.color = 'black';
+      setTimeout(() => {
+        warningBanner.style.display = 'none';
+      }, 5000);
+    } else if (type === 'error') {
+      warningBanner.style.background = 'red';
+      warningBanner.style.color = 'white';
+    }
+  }
+
+  function isPortrait() {
+    return window.innerHeight > window.innerWidth;
+  }
+
+  // Track whether page initially loaded in portrait
+  const startedInPortrait = isPortrait();
+  const reloadFlag = sessionStorage.getItem("hasReloadedFromPortrait");
+
+  function handleOrientation() {
+    const currentlyPortrait = isPortrait();
+
+    if (currentlyPortrait) {
+      canvas.style.display = "none";
+      unityShowBanner("Please rotate your device to landscape mode to play the game.", "error");
+    } else {
+      canvas.style.display = "block";
+      document.querySelector("#unity-warning").style.display = "none";
+
+      // If page started in portrait, and this is the first switch to landscape
+      if (startedInPortrait && !reloadFlag) {
+        sessionStorage.setItem("hasReloadedFromPortrait", "true");
+        location.reload(); // Safe: happens only once per session
       }
+    }
+  }
 
-      function isPortrait() {
-        return window.innerHeight > window.innerWidth;
-      }
+  window.addEventListener("orientationchange", () => {
+    setTimeout(handleOrientation, 500);
+  });
 
-      function handleOrientation() {
-        if (isPortrait()) {
-          canvas.style.display = "none";
-          unityShowBanner("Please rotate your device to landscape mode to play the game.", "error");
-        } else {
-          location.reload();
-        }
-      }
-
-      window.addEventListener("orientationchange", () => {
-        setTimeout(handleOrientation, 500);
-      });
-
-      handleOrientation(); // Initial check
+  handleOrientation(); // Initial check
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/main.loader.js";
